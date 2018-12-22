@@ -8,7 +8,7 @@ const server = new opcua.OPCUAServer({
      buildInfo : {
         productName: "KServer",
         buildNumber: "8000",
-        buildDate: new Date(2018,12,10)
+        buildDate: new Date(2018,12,19)
     }
 });
 
