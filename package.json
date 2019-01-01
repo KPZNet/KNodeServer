@@ -1,0 +1,26 @@
+{
+  "name": "knodeserver",
+  "version": "1.0.0",
+  "description": "K Node Server",
+  "main": "KNodeServer.js",
+  "dependencies": {
+    "node-opcua": "^0.5.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KPZNet/KNodeServer.git"
+  },
+  "keywords": [
+    "OPC"
+  ],
+  "author": "Ken Ceglia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KPZNet/KNodeServer/issues"
+  },
+  "homepage": "https://github.com/KPZNet/KNodeServer#readme"
+}
