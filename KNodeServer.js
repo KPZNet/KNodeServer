@@ -21,8 +21,8 @@ function AddProps(KPnt, numVarSets, vUpdaterString, vUpdaterDouble, vUpdaterInt)
 
     totalNodes += (numVarSets * 3);
 
-    let i = 0
-    for( i = 0; i< numVarSets;i++)
+    let i = 1
+    for( i = 1; i<= numVarSets;i++)
     {
         namespace.addVariable({
             componentOf: KPnt,
