@@ -14,24 +14,19 @@ const server = new opcua.OPCUAServer({
 
 let totalNodes = 0
 
-function AddMeNode(parenter, oName, numVarSets, vUpdaterString, vUpdaterDouble, vUpdaterInt){
+function AddProps(KPnt, numVarSets, vUpdaterString, vUpdaterDouble, vUpdaterInt){
 
     const addressSpace = server.engine.addressSpace;
     const namespace = addressSpace.getOwnNamespace();
 
-    // declare a new object
-    var KPnt = namespace.addObject({
-        organizedBy: parenter,
-        browseName: oName
-    });
-
     totalNodes += (numVarSets * 3);
+
     let i = 0
     for( i = 0; i< numVarSets;i++)
     {
         namespace.addVariable({
             componentOf: KPnt,
-            browseName: "VString"+i,
+            browseName: "VariableStr"+i,
             dataType: "String",
             value: {
                 get: function () {
@@ -41,7 +36,7 @@ function AddMeNode(parenter, oName, numVarSets, vUpdaterString, vUpdaterDouble, 
         });
         namespace.addVariable({
             componentOf: KPnt,
-            browseName: "VDouble"+i,
+            browseName: "VariableDbl"+i,
             dataType: "Double",
             value: {
                 get: function () {
@@ -51,22 +46,20 @@ function AddMeNode(parenter, oName, numVarSets, vUpdaterString, vUpdaterDouble, 
         });
         namespace.addVariable({
             componentOf: KPnt,
-            browseName: "VInt"+i,
+            browseName: "VariableInt"+i,
             dataType: "Int32",
             value: {
                 get: function () {
-                    return new opcua.Variant({dataType: opcua.DataType.Int32, value: vUpdaterInt });
+                    return new opcua.Variant({dataType: opcua.DataType.Int16, value: vUpdaterInt });
                 }
             }
         });
+
     }
-
-
-    return KPnt
 }
 
 
-function AddTree2(parentNode, baseName, numNodes, maxDepth, numVars, treeDepth)
+function AddRootNode(parentNode, baseName, numNodes, maxDepth, numVars, treeDepth)
 {
     // add some variables 
     // add a variable named MyVariable1 to the newly created folder "MyDevice"
@@ -78,19 +71,32 @@ function AddTree2(parentNode, baseName, numNodes, maxDepth, numVars, treeDepth)
     if( treeDepth <= maxDepth  )
     {
         let i = 1
-
         totalNodes += treeDepth;
 
         for(i = 1; i <= numNodes; i++)
         {
             if(treeDepth == maxDepth)
             {
-                iP = AddMeNode(parentNode, baseName + " " + treeDepth +  " " + i, numVars, vUpdatedString, vUpdatedDouble, vUpdatedInt);
+                // declare a new object
+                const addressSpace = server.engine.addressSpace;
+                const namespace = addressSpace.getOwnNamespace();
+                var KPnt = namespace.addObject({
+                    organizedBy: parentNode,
+                    browseName: baseName + " " + treeDepth +  " " + i
+                });
+                iP = AddProps(KPnt, numVars, vUpdatedString, vUpdatedDouble, vUpdatedInt);
             }
             else
             {
-                iP = AddMeNode(parentNode, baseName + " " + treeDepth +  " " + i, numVars, vUpdatedString, vUpdatedDouble, vUpdatedInt);
-                AddTree2(iP, baseName, numNodes, maxDepth, numVars, treeDepth);
+                // declare a new object
+                const addressSpace = server.engine.addressSpace;
+                const namespace = addressSpace.getOwnNamespace();
+                var KPnt = namespace.addObject({
+                    organizedBy: parentNode,
+                    browseName: baseName + " " + treeDepth +  " " + i
+                });
+                iP = AddProps(KPnt, numVars, vUpdatedString, vUpdatedDouble, vUpdatedInt);
+                AddRootNode(KPnt, baseName, numNodes, maxDepth, numVars, treeDepth);
             }
         }
 
@@ -108,7 +114,7 @@ function post_initialize() {
         // declare a new object
         const device = namespace.addObject({
             organizedBy: addressSpace.rootFolder.objects,
-            browseName: "GNoot"
+            browseName: "Groot"
         });
 
         const numNodes = 3
@@ -117,7 +123,7 @@ function post_initialize() {
 
         
 
-        AddTree2(device, "KNode", numNodes, treeDepth, numVars, 0);
+        AddRootNode(device, "JSNode", numNodes, treeDepth, numVars, 0);
 
 
         
@@ -166,47 +172,8 @@ function post_initialize() {
         });
 
         
-        /*
-        // add a variable named MyVariable2 to the newly created folder "MyDevice"
-        let variable2 = 10.0;
-        
-        namespace.addVariable({         
-            componentOf: device,
-            nodeId: "ns=1;b=1020FFAA", // some opaque NodeId in namespace 4
-            browseName: "MV2",
-            dataType: "Double",    
-            value: {
-                get: function () {
-                    return new opcua.Variant({dataType: opcua.DataType.Double, value: variable2 });
-                },
-                set: function (variant) {
-                    variable2 = parseFloat(variant.value);
-                    return opcua.StatusCodes.Good;
-                }
-            }
-        });
-        */
         const os = require("os");
-        /**
-         * returns the percentage of free memory on the running machine
-         * @return {double}
-         */
-        function available_memory() {
-            // var value = process.memoryUsage().heapUsed / 1000000;
-            const percentageMemUsed = os.freemem() / os.totalmem() * 100.0;
-            return percentageMemUsed;
-        }
-        namespace.addVariable({
-            
-            componentOf: device,
-            
-            nodeId: "s=free_memory", // a string nodeID
-            browseName: "FreeMemory",
-            dataType: "Double",    
-            value: {
-                get: function () {return new opcua.Variant({dataType: opcua.DataType.Double, value: available_memory() });}
-            }
-        });
+
     }
     console.log("KUAServer initializing...");
     construct_my_address_space(server);
