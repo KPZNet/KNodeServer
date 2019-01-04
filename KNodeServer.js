@@ -19,11 +19,11 @@ function AddProps(KPnt, numVarSets, vUpdaterString, vUpdaterDouble, vUpdaterInt)
     const addressSpace = server.engine.addressSpace;
     const namespace = addressSpace.getOwnNamespace();
 
-    totalNodes += (numVarSets * 3);
-
     let i = 1
+    
     for( i = 1; i<= numVarSets;i++)
     {
+        totalNodes += 3;
         namespace.addVariable({
             componentOf: KPnt,
             browseName: "VariableStr"+i,
@@ -71,7 +71,7 @@ function AddRootNode(parentNode, baseName, numNodes, maxDepth, numVars, treeDept
     if( treeDepth <= maxDepth  )
     {
         let i = 1
-        totalNodes += treeDepth;
+        totalNodes += numNodes;
 
         for(i = 1; i <= numNodes; i++)
         {
@@ -105,7 +105,7 @@ function AddRootNode(parentNode, baseName, numNodes, maxDepth, numVars, treeDept
 
 
 function post_initialize() {
-    console.log("initialized");
+    console.log("*** SERVER Initalizing ... ***");
     function construct_my_address_space(server) {
     
         const addressSpace = server.engine.addressSpace;
@@ -118,7 +118,7 @@ function post_initialize() {
         });
 
         const numNodes = 3
-        const treeDepth = 3
+        const treeDepth = 4
         const numVars = 1
 
         
@@ -172,6 +172,8 @@ function post_initialize() {
         });
 
         
+        console.log("*** INITIALIZED Complete Total Nodes : ", totalNodes);
+
         const os = require("os");
 
     }
